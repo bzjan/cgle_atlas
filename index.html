@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="icon" type="image/png" href="files/icon.png" sizes="32x32">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+<!-- load html files dynamically -->
+<script> 
+	$(function(){
+		$("#tabs").load("files/tabs.html"); 
+	});
+	
+	$(function(){
+		$("#tabContents").load("files/tabContents.html"); 
+	});
+</script>
+
+
+<title>CGLE Atlas</title>
+</head>
+
+<body>
+	
+	<div class="header">
+		<h1>CGLE Atlas</h1>
+	</div> 
+	
+<!--
+	<p>Jan Totz, Pearson Miller, J&ouml;rn Dunkel</p>
+	<p>Department of Mathematics, Massachusetts Institute of Technology, 02139 Cambridge, MA, USA</p>
+-->
+
+	<p><img src="files/cgle.png" alt="Complex Ginzburg-Landau Equation" /></p>
+	
+	<br>
+	
+	<p><strong><em>Interactive parameter space explorer</em></strong></p>
+	
+	
+	<p class="tab"><span class="red">Click on a point in parameter space below to display the corresponding state:</span></p>
+	
+	<div class="wrap">
+		
+		<div>
+			<!-- top level tab control -->
+			<div class="tab"> 
+				<a name="parameterSpace" id="parameterSpace"></a>
+				<div id="tabs"></div>
+				<div class="bottom_border"></div>
+			</div>
+			
+				
+			<!-- dynamic parameter space image -->
+			<div class="floatleft">
+				<div id="tabContents"></div>
+			</div>
+			
+			<!-- tabs for different data at selected parameters -->
+			<div class="floatright">
+				<p>The data below corresponds to the following parameters:<br><strong id="datapoint">No datapoint selected!</strong></p>
+				<div class="tab" id="openData">
+					<div class="left">
+						<button class="tablinks_content active" onclick="selectContent(event, 'StateImage')">State image</button>
+						<button class="tablinks_content" onclick="selectContent(event, 'Simulation')">Simulation</button>
+					</div>
+					<div class="right"></div>
+				</div>
+				
+				<!-- content of State image tab -->
+				<div id="StateImage" class="tabcontent_content" style="display: block;">
+					<h3>Kymograph and snapshot of final state</h3>
+					<p><img src="" alt="Click on a point in parameter space to display the corresponding state." style="width:800px;height:400px;"> </p>
+				</div>
+				
+				<!-- content of Simulation tab -->
+				<div id="Simulation" class="tabcontent_content" style="display: none;">
+					<h3>Live simulation on your graphics card</h3>
+					<p><button id="btn_run" onclick="run()">Start</button> (Be sure to have enough memory (1 GB) available on your graphics card!) </p>
+					<p>Draw on the canvas with your mouse to create and annihilate topological defects.</p>
+					<canvas id="glcanvas" width="256" height="256" style="width: 512px; height: 512px;"></canvas>
+					<script src="files/cgle_shader_simulation.js" defer></script>
+				</div>
+			
+				
+<!--
+				<div style="clear: both;"> </div>
+-->
+			</div>
+		</div>
+
+	<br>
+
+
+</div>
+
+<script>
+	<!-- for main tab -->
+	function selectImage(evt, imageName) {
+		var i, tabcontent, tablinks;
+		tabcontent = document.getElementsByClassName("tabcontent_image");
+		for (i = 0; i < tabcontent.length; i++) {
+			tabcontent[i].style.display = "none";
+		}
+		tablinks = document.getElementsByClassName("tablinks_image");
+		for (i = 0; i < tablinks.length; i++) {
+			tablinks[i].className = tablinks[i].className.replace(" active", "");
+		}
+		document.getElementById(imageName).style.display = "block";
+		evt.currentTarget.className += " active";
+	}
+	
+	<!-- for clickable panes and side tabs -->
+	function selectContent(evt, contentName) {
+		var i, tabcontent, tablinks;
+		tabcontent = document.getElementsByClassName("tabcontent_content");
+		
+		for (i = 0; i < tabcontent.length; i++) {
+			tabcontent[i].style.display = "none";
+		}
+		
+		tablinks = document.getElementsByClassName("tablinks_content");
+		for (i = 0; i < tablinks.length; i++) {
+			tablinks[i].className = tablinks[i].className.replace(" active", "");
+		}
+		
+		document.getElementById(contentName).style.display = "block";
+		evt.currentTarget.className += " active";
+	}
+	
+	<!-- if you click on an image tile, show text and image in right subtab; .imageTile is defined in tabContents.html -->
+	$(document).on('click','.imageTile',function(){
+		$('#datapoint').text($(this).attr('datapoint'));
+		$('#StateImage img').attr('src', $(this).attr('img-link'));
+	});
+	
+</script>
+
+
+</body>
+</html>

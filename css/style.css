@@ -1,0 +1,141 @@
+@charset "utf-8";
+/* CSS Document */
+body {
+	font-family: "Lato", sans-serif;
+}
+ 
+  /* Style the dataframe */
+div.dataframe {
+/*
+    overflow: hidden;
+*/
+    border: none;
+    background-color: #fff;
+    /*border-bottom: 1px solid #666;*/
+    border-left: none;
+    /*border-right: 1px solid #666;*/
+}
+
+ /* Style the tab */
+div.tab {
+    border: none;
+    background-color: #f1f1f1;
+    /*overflow: auto; */
+    display: table;
+    width: 100%;
+/*
+    height: 100%;
+*/
+}
+
+
+/* Style the buttons inside the tab */
+div.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    border-bottom: 1px solid #666;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+div.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+div.tab button.active {
+    background-color: #fff;
+    border-bottom: none;
+    border-left: 1px solid #666;
+    border-right: 1px solid #666;
+    border-top: 1px solid #666;
+    outline: none;
+}
+
+div.left {
+    float: left;
+    border: none;
+    display: table-cell;
+}
+
+div.right {
+    /*border-bottom: 1px solid #666;*/
+    display: table-cell;
+    vertical-align: bottom;
+    width: 10px;
+}
+
+/* Style the tab content */
+.tabcontent_image {
+    padding: 6px 12px;
+    border: none;
+    border-left: 1px solid #666;
+} 
+
+.tabcontent_content {
+    padding: 6px 12px;
+    border: none;
+    border-left: 1px solid #666;
+} 
+
+
+.display {
+    display: active;
+} 
+
+.nodisplay {
+    display: none;
+} 
+
+/* Fade in tabs */
+@-webkit-keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+.wrap {
+    width: 100%;
+}
+
+.header {
+    padding: 2px;
+    padding-left: 40px;
+    text-align: left;
+    background: #0a61a3;
+    color: white;
+    font-size: 30px;
+    font-family: times, serif;
+}
+
+.floatleft {
+    float:left; 
+    width: 730px;
+    background-color: #ffffff;
+    height: 670px;
+    /*border-left: 1px solid #666;*/
+}
+
+.floatright {
+	float: left;
+    background-color: #ffffff;
+    height: 658px;
+    width: 824px;
+    padding: 6px 12px;
+    /*border-left: 1px solid #666;*/
+}
+
+.red {
+	color: #F00;
+}
+
+.blue {
+	color: #0a61a3;
+}

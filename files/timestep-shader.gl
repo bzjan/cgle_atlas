@@ -1,0 +1,60 @@
+// Time evolution shader program
+
+// specify precision
+precision mediump float;
+
+// get from JS
+uniform sampler2D u_image;
+uniform vec2 u_size;
+uniform float c1;
+uniform float c2;
+uniform vec2 brush;
+
+// define constants
+const float dt = 0.001;			// time step
+const float dx = 0.352;			// spatial step, so that total length is 180
+const float D = 1.0;			// diffusion coefficient
+
+// Here are commands for the color evolution of a single pixel
+void main()
+{
+	// calculate Laplacian = diffusive flux for both species
+	// species 1: lap.x
+	// species 2: lap.y
+	
+	vec2 step = 1.0/u_size;	// relative step sizes in x and y for texture memory
+	vec2 p = gl_FragCoord.xy * step;									// relative position
+	vec2 uv = texture2D(u_image, p).xy;
+	vec2 uvLeft = texture2D(u_image, p+vec2(-step.x, 0.0)).xy;
+	vec2 uvRight = texture2D(u_image, p+vec2(step.x, 0.0)).xy;
+	vec2 uvBottom = texture2D(u_image, p+vec2(0.0, -step.y)).xy;
+	vec2 uvTop = texture2D(u_image, p+vec2(0.0, step.y)).xy;
+	vec2 lap = (uvLeft + uvRight + uvBottom + uvTop - 4.0*uv)/(dx*dx);	// laplacian
+	
+	// right-hand side (rhs) of dynamical system
+	// for cgle: real and imaginary part
+	// uv.x and lapl.x are real part concentration and laplacian
+	// uv.y and lapl.y are imag part concentration and laplacian
+	float r2 = uv.x*uv.x + uv.y*uv.y;													// re^2 + im^2, precomputation to speed up calculation
+	vec2 rhs = vec2(
+		uv.x*(1.0-r2) + c2*r2*uv.y + D*(lap.x - c1*lap.y),
+		uv.y*(1.0-r2) - c2*r2*uv.x + D*(lap.y + c1*lap.x)
+	);
+	
+	// explicit Euler iteration
+	vec2 uvNew = uv + dt*rhs;
+	
+	// TODO: put in own function
+	// on-mouse click: change concentration values, only change one variable, not both!
+	if(brush.x > 0.0)
+	{
+		vec2 diff = (p - brush)/step;
+		float dist = dot(diff, diff);
+		if(dist < 100.0)
+			uvNew.x = 0.9;
+			//~ uvNew.y = -0.9;
+	}
+	
+	// set color values of pixel (RGBA), here: hacked for storing dynamical variables, colors are computed later
+	gl_FragColor = vec4(uvNew, 0.0, 1.0);
+}
