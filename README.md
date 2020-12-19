@@ -1,4 +1,4 @@
-# cgle_atlas
+# CGLE Atlas
 
 
 run test on local machine via
@@ -9,3 +9,6 @@ firefox http://127.0.0.1:1337
 
 github website
 https://bzjan.github.io/cgle_atlas/
+
+public website:
+www.cgleatlas.com
