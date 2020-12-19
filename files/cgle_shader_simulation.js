@@ -6,7 +6,7 @@
  * ©2020 Jan Totz.
  * jantotz at mit.edu
  * 
- * v1.1
+ * v1.2
  */
 
 
@@ -23,13 +23,13 @@ var H = 256;
 // read/write variables
 var c1 = 0.0;
 var c2 = 0.0;
-//~ var c2 = 0.0;
 var brushx = -1;
 var brushy = -1;
 
 var mMouseX, mMouseY;
 var mMouseDown = false;
 var runningQ = false;
+var pauseQ = false;
 
 
 // do nothing if no button is clicked
@@ -99,24 +99,25 @@ async function run() {
 		}
 		
 		function step() {
-			
-			// update dynamics
-			gl.useProgram(timestep_prog);
-			gl.uniform2f(gl.getUniformLocation(timestep_prog, "brush"), brushx, brushy);	// mouse interaction
-			gl.uniform1f(gl.getUniformLocation(timestep_prog, "c1"), c1);					// parameter for dynamics
-			gl.uniform1f(gl.getUniformLocation(timestep_prog, "c2"), c2);					// parameter for dynamics
-			var timeStepsPerFrame = 100;
-			for (var i=0; i<timeStepsPerFrame; i++) {
-				gl.bindTexture(gl.TEXTURE_2D, [t1, t2][i % 2]);
-				gl.bindFramebuffer(gl.FRAMEBUFFER, [fb2, fb1][i % 2]);
+			if(!pauseQ){
+				// update dynamics
+				gl.useProgram(timestep_prog);
+				gl.uniform2f(gl.getUniformLocation(timestep_prog, "brush"), brushx, brushy);	// mouse interaction
+				gl.uniform1f(gl.getUniformLocation(timestep_prog, "c1"), c1);					// parameter for dynamics
+				gl.uniform1f(gl.getUniformLocation(timestep_prog, "c2"), c2);					// parameter for dynamics
+				var timeStepsPerFrame = 100;
+				for (var i=0; i<timeStepsPerFrame; i++) {
+					gl.bindTexture(gl.TEXTURE_2D, [t1, t2][i % 2]);
+					gl.bindFramebuffer(gl.FRAMEBUFFER, [fb2, fb1][i % 2]);
+					gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+				}
+				
+				// update image
+				gl.useProgram(render_prog);
+				gl.bindTexture(gl.TEXTURE_2D, t1);
+				gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 				gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 			}
-			
-			// update image
-			gl.useProgram(render_prog);
-			gl.bindTexture(gl.TEXTURE_2D, t1);
-			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 		}
 		
 		var animationFrame;
@@ -126,7 +127,6 @@ async function run() {
 		}
 		
 		animationFrame = requestAnimationFrame(frame);
-		
 		runningQ = true;
 	}
 }
@@ -244,23 +244,24 @@ function fail(message) {
 }
 
 
+function pause() {
+	pauseQ = !pauseQ;
+}
 
 
-var onMouseMove = function(e)
-{
-    var ev = e ? e : window.event;
-    
-    mMouseX = ev.pageX - canvas.offsetLeft;
-    mMouseY = ev.pageY - canvas.offsetTop;
-    
+var onMouseMove = function(e) {
+	var ev = e ? e : window.event;
+	
+	mMouseX = ev.pageX - canvas.offsetLeft;
+	mMouseY = ev.pageY - canvas.offsetTop;
+	
 	if(mMouseDown){
 		brushx = mMouseX/(2*W);
 		brushy = 1-mMouseY/(2*H);
 	}
 }
 
-var onMouseDown = function(e)
-{
+var onMouseDown = function(e) {
 	var ev = e ? e : window.event;
 	mMouseDown = true;
 	
@@ -268,8 +269,7 @@ var onMouseDown = function(e)
 	brushy = 1-mMouseY/(2*H);
 }
 
-var onMouseUp = function(e)
-{
+var onMouseUp = function(e) {
 	mMouseDown = false;
 	brushx = -1;
 	brushy = -1;
