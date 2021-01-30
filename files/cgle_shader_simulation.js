@@ -1,18 +1,12 @@
 /* 
  * Complex Ginzburg Landau simulation with GPU shaders
  *
- * A solver of the Gray-Scott model of reaction diffusion.
- *
  * ©2020 Jan Totz.
  * jantotz at mit.edu
  * 
  * v1.2
  */
 
-
-//
-// Start here
-//
 
 // TODO: read properties of canvas
 // read variables
@@ -245,7 +239,19 @@ function fail(message) {
 
 
 function pause() {
+	
+	// change simulation state
 	pauseQ = !pauseQ;
+	
+	// change button appearance
+	var btn = document.getElementById("btn_pause");
+	if (pauseQ){
+		btn.innerHTML = 'Continue';
+	}else{
+		btn.innerHTML = 'Pause';
+	} 
+	
+	
 }
 
 
