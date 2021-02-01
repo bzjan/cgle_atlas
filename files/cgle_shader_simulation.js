@@ -309,10 +309,12 @@ function clickableCanvasOverlay(event,canvas) {
 	const [xpos,ypos] = getCursorPosition(canvas,event);			// position of mouse in image
 	const [x,y] = [xpos-x0, ypos-y0];								// position in grid
 	
+	// check that mouseclick occurred in good image domain
 	if(x >= 0 && x <= nx && y >= 0 && y <= ny){
 		const [boxIdx_x,boxIdx_y] = [Math.floor((x+0.5*boxSize_x)/boxSize_x), Math.floor((y+0.5*boxSize_y)/boxSize_y)];		// box index
 		const [boxCorner_x,boxCorner_y] = [x0-0.5*boxSize_x+boxIdx_x*boxSize_x,y0-0.5*boxSize_y+boxIdx_y*boxSize_y];
 		
+		// get b,c values
 		const [bStart,bEnd] = [-3.0,3.0];
 		const [cStart,cEnd] = [-3.0,3.0];
 		[b,c] = [bStart+boxIdx_x*(bEnd-bStart)/nboxes_x,cEnd-boxIdx_y*(cEnd-cStart)/nboxes_y];
