@@ -11,16 +11,105 @@
 <!-- Please send any questions, comments or bug reports to the author at jantotz (a) mit.edu -->
 
 
-<!-- load html files dynamically -->
-<script> 
+
+<script>
+	
+	<!-- load tabs.html file dynamically -->
 	$(function(){
 		$("#tabs").load("files/tabs.html"); 
 	});
 	
+	// initialize clickable image canvases
 	$(function(){
-		$("#tabContents").load("files/tabContents.html"); 
+		
+		var canvas=document.getElementById("layer_image");
+		var ctx=canvas.getContext("2d");
+		var canvas2=document.getElementById("layer_overlay");
+		var ctx2=canvas2.getContext("2d");
+		
+		const [nx,ny] = [434,434];										// lengths in x,y direction
+		const [nboxes_x,nboxes_y] = [19,19];							// number of boxes
+		const [boxSize_x,boxSize_y] = [nx/nboxes_x,ny/nboxes_y];		// lengths of a single box
+		const [x0,y0] = [94,20];										// grid offset in image
+		
+		const [boxIdx_x,boxIdx_y] = [8,6];								// box index
+		const [boxCorner_x,boxCorner_y] = [x0-0.5*boxSize_x+boxIdx_x*boxSize_x,y0-0.5*boxSize_y+boxIdx_y*boxSize_y];
+		
+		const [bStart,bEnd] = [-3.0,3.0];
+		const [cStart,cEnd] = [-3.0,3.0];
+		[b,c] = [bStart+boxIdx_x*(bEnd-bStart)/nboxes_x,cEnd-boxIdx_y*(cEnd-cStart)/nboxes_y];
+		
+		var imgOverview = new Image();
+		imgOverview.onload = function () {
+			// draw background file on canvas
+			ctx.drawImage(imgOverview,0,0,canvas.width,canvas.height);
+			
+			// draw overlay
+			ctx2.strokeStyle = "red";
+			ctx2.strokeRect(boxCorner_x,boxCorner_y,boxSize_x,boxSize_y);
+			ctx2.strokeStyle = "orange";
+			ctx2.strokeRect(boxCorner_x+1,boxCorner_y+1,boxSize_x-2,boxSize_y-2);
+			ctx2.strokeRect(boxCorner_x-1,boxCorner_y-1,boxSize_x+2,boxSize_y+2);
+		}
+		imgOverview.src="overview_images/parameter_space.png";
+		
+		
+		var canvas3=document.getElementById("state_image");
+		var ctx3=canvas3.getContext("2d");
+		var imgState = new Image();
+		imgState.onload = function () {
+			// draw background file on canvas
+			ctx3.drawImage(imgState,0,0,canvas3.width,canvas3.height);
+		}
+		imgState.src="images/xt_state_c1_-0.47368_c2_1.10526.png";
 	});
+	
+	
+	
+	// main tab control
+	function selectImage(evt, imageSource) {
+		
+		// tabs
+		var tablinks = document.getElementsByClassName("tablinks_image");
+		for (var i = 0; i < tablinks.length; i++) {
+			tablinks[i].className = tablinks[i].className.replace(" active", "");
+		}
+		evt.currentTarget.className += " active";					// set selected tab to active
+		
+		// image
+		var canvas=document.getElementById("layer_image");
+		var ctx=canvas.getContext("2d");
+		var img=new Image();
+		img.onload = function () {
+			ctx.drawImage(img,0,0,canvas.width,canvas.height);		// draw the image on the canvas
+		}
+		img.src = imageSource;
+	}
+	
+	// for clickable panes and side tabs
+	function selectContent(evt, contentName) {
+		
+		// tabs
+		var tablinks = document.getElementsByClassName("tablinks_content");
+		for (var i = 0; i < tablinks.length; i++) {
+			tablinks[i].className = tablinks[i].className.replace(" active", "");
+		}
+		evt.currentTarget.className += " active";								// set selected tab to active
+		
+		// tab content
+		var tabcontent = document.getElementsByClassName("tabcontent_content");
+		for (var i = 0; i < tabcontent.length; i++) {
+			tabcontent[i].style.display = "none";
+		}
+		document.getElementById(contentName).style.display = "block";			// show current tab content
+		
+	}
+	
 </script>
+
+
+
+
 
 
 <title>CGLE Atlas</title>
@@ -46,31 +135,35 @@
 			<br/>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="files/cgle.png" width="500" alt="Complex Ginzburg-Landau Equation" /> <br/>
 			<br/>
-			Use the different tabs to explore spatial and temporal characteristics of the resulting pattern at your chosen parameter point.
+			See different tabs to explore spatial and temporal characteristics of the resulting pattern at your chosen parameter point.
 		</font>
 	</p>
 	
 	<br>
+	
+	
 	
 	<div class="wrap">
 		
 		<div>
 			<!-- top level tab control -->
 			<div class="tab"> 
-				<a name="parameterSpace" id="parameterSpace"></a>
-				<div id="tabs"></div>
+				<div id="tabs"></div>						<!-- load tabs.html -->
 				<div class="bottom_border"></div>
 			</div>
 			
-				
-			<!-- dynamic parameter space image -->
+			<!-- left: dynamic parameter space image -->
 			<div class="floatleft">
-				<div id="tabContents"></div>
+				<h3>&nbsp;</h3>
+				<div style="position: relative;">
+					<canvas id="layer_image" width="666" height="536" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
+					<canvas id="layer_overlay" width="666" height="536"  onclick="clickableCanvasOverlay(event,this)" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+				</div>
 			</div>
 			
-			<!-- tabs for different data at selected parameters -->
+			<!-- right: tabs for different data at selected parameters -->
 			<div class="floatright">
-				<p>The data below corresponds to the following parameters:<br><strong id="datapoint">No datapoint selected!</strong></p>
+				<p>The data below corresponds to the following parameters:<br><strong id="datapoint">Parameters: b = -0.47, c = 1.11</strong></p>
 				<div class="tab" id="openData">
 					<div class="left">
 						<button class="tablinks_content active" onclick="selectContent(event, 'Simulation')">Simulation</button>
@@ -78,7 +171,7 @@
 					</div>
 					<div class="right"></div>
 				</div>
-
+				
 				<!-- content of Simulation tab -->
 				<div id="Simulation" class="tabcontent_content" style="display: block;">
 					<h3>Live simulation on your graphics card</h3>
@@ -89,64 +182,18 @@
 					<canvas id="glcanvas" width="256" height="256" style="width: 512px; height: 512px;"></canvas>
 					<script src="files/cgle_shader_simulation.js" defer></script>
 				</div>
-
+				
 				<!-- content of State image tab -->
 				<div id="StateImage" class="tabcontent_content" style="display: none;">
 					<h3>Kymograph and snapshot of final state</h3>
-					<p><img src="" alt="Click on a point in parameter space to display the corresponding state." style="width:800px;height:400px;"> </p>
+					<canvas id="state_image" width="852" height="403"></canvas>
 				</div>
 				
-
 			</div>
 		</div>
 	
 	
 	</div>
 	
-
-
-<script>
-	<!-- for main tab -->
-	function selectImage(evt, imageName) {
-		var i, tabcontent, tablinks;
-		tabcontent = document.getElementsByClassName("tabcontent_image");
-		for (i = 0; i < tabcontent.length; i++) {
-			tabcontent[i].style.display = "none";
-		}
-		tablinks = document.getElementsByClassName("tablinks_image");
-		for (i = 0; i < tablinks.length; i++) {
-			tablinks[i].className = tablinks[i].className.replace(" active", "");
-		}
-		document.getElementById(imageName).style.display = "block";
-		evt.currentTarget.className += " active";
-	}
-	
-	<!-- for clickable panes and side tabs -->
-	function selectContent(evt, contentName) {
-		var i, tabcontent, tablinks;
-		tabcontent = document.getElementsByClassName("tabcontent_content");
-		
-		for (i = 0; i < tabcontent.length; i++) {
-			tabcontent[i].style.display = "none";
-		}
-		
-		tablinks = document.getElementsByClassName("tablinks_content");
-		for (i = 0; i < tablinks.length; i++) {
-			tablinks[i].className = tablinks[i].className.replace(" active", "");
-		}
-		
-		document.getElementById(contentName).style.display = "block";
-		evt.currentTarget.className += " active";
-	}
-	
-	<!-- if you click on an image tile, show text and image in right subtab; .imageTile is defined in tabContents.html -->
-	$(document).on('click','.imageTile',function(){
-		$('#datapoint').text($(this).attr('datapoint'));
-		$('#StateImage img').attr('src', $(this).attr('img-link'));
-	});
-	
-</script>
-
-
 </body>
 </html>

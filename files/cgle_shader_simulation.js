@@ -4,23 +4,21 @@
  * ©2020 Jan Totz.
  * jantotz at mit.edu
  * 
- * v1.2
+ * v1.3
  */
 
 
-// TODO: read properties of canvas
 // read variables
-var canvas;
-var W = 256;
-var H = 256;
+var glcanvas;				// reference to simulation canvas
 
-// read/write variables
-var c1 = 0.0;
-var c2 = 0.0;
+// global read/write variables
+var b = 0.0;
+var c = 0.0;
 var brushx = -1;
 var brushy = -1;
 
-var mMouseX, mMouseY;
+var W, H;				// width and height of simulation canvas
+var mMouseX, mMouseY;	// mouse position on simulation canvas
 var mMouseDown = false;
 var runningQ = false;
 var pauseQ = false;
@@ -40,14 +38,21 @@ async function run() {
 		if(!window.WebGLRenderingContext) {
 			fail('Error: Your browser does not support WebGL');
 		} else {
-			canvas = document.querySelector('#glcanvas');
-			var gl = canvas.getContext('webgl');
+			glcanvas = document.querySelector('#glcanvas');
+			W = glcanvas.width;
+			H = glcanvas.height;
+			var gl = glcanvas.getContext('webgl');
 			checkCompatibility(gl);
 		}
 		
-		canvas.onmousedown = onMouseDown;
-		canvas.onmouseup = onMouseUp;
-		canvas.onmousemove = onMouseMove;
+		// TODO: fix warning message
+		// enable necessary extensions
+		//~ gl.getExtension('EXT_color_buffer_float');
+		//~ gl.getExtension('EXT_float_blend');
+		
+		glcanvas.onmousedown = onMouseDown;
+		glcanvas.onmouseup = onMouseUp;
+		glcanvas.onmousemove = onMouseMove;
 		
 		// shaders
 		const vertexShaderCode = await loadShaderFileAsync('files/vertex-shader.gl');
@@ -67,8 +72,8 @@ async function run() {
 		loadVertexData(gl, timestep_prog);
 		gl.uniform2f(gl.getUniformLocation(timestep_prog, "u_size"), W, H);				// size of domain
 		gl.uniform2f(gl.getUniformLocation(timestep_prog, "brush"), brushx, brushy);	// mouse interaction
-		gl.uniform1f(gl.getUniformLocation(timestep_prog, "c1"), c1);					// parameter for dynamics
-		gl.uniform1f(gl.getUniformLocation(timestep_prog, "c2"), c2);					// parameter for dynamics
+		gl.uniform1f(gl.getUniformLocation(timestep_prog, "c1"), b);					// parameter for dynamics
+		gl.uniform1f(gl.getUniformLocation(timestep_prog, "c2"), c);					// parameter for dynamics
 		
 		gl.useProgram(render_prog);
 		loadVertexData(gl, render_prog);
@@ -97,8 +102,8 @@ async function run() {
 				// update dynamics
 				gl.useProgram(timestep_prog);
 				gl.uniform2f(gl.getUniformLocation(timestep_prog, "brush"), brushx, brushy);	// mouse interaction
-				gl.uniform1f(gl.getUniformLocation(timestep_prog, "c1"), c1);					// parameter for dynamics
-				gl.uniform1f(gl.getUniformLocation(timestep_prog, "c2"), c2);					// parameter for dynamics
+				gl.uniform1f(gl.getUniformLocation(timestep_prog, "c1"), b);					// parameter for dynamics
+				gl.uniform1f(gl.getUniformLocation(timestep_prog, "c2"), c);					// parameter for dynamics
 				var timeStepsPerFrame = 100;
 				for (var i=0; i<timeStepsPerFrame; i++) {
 					gl.bindTexture(gl.TEXTURE_2D, [t1, t2][i % 2]);
@@ -258,8 +263,8 @@ function pause() {
 var onMouseMove = function(e) {
 	var ev = e ? e : window.event;
 	
-	mMouseX = ev.pageX - canvas.offsetLeft;
-	mMouseY = ev.pageY - canvas.offsetTop;
+	mMouseX = ev.pageX - glcanvas.offsetLeft;
+	mMouseY = ev.pageY - glcanvas.offsetTop;
 	
 	if(mMouseDown){
 		brushx = mMouseX/(2*W);
@@ -282,12 +287,62 @@ var onMouseUp = function(e) {
 }
 
 
-$(document).on('click','.imageTile',function(){
-	var c1c2string = $('#datapoint')[0].textContent;
-	var splitStrings = c1c2string.split(/=|,/);
-	c1 = parseFloat(splitStrings[1]);
-	c2 = parseFloat(splitStrings[3]);
-});
+
+
+// get mouse position on canvas
+function getCursorPosition(canvas, event) {
+	const rect = canvas.getBoundingClientRect()
+	const x = event.clientX - rect.left;
+	const y = event.clientY - rect.top;
+	return [x, y];
+}
+
+
+// update clickable overlay canvas
+function clickableCanvasOverlay(event,canvas) {
+	
+	const [nx,ny] = [434,434];										// lengths in x,y direction
+	const [nboxes_x,nboxes_y] = [19,19];							// number of boxes
+	const [boxSize_x,boxSize_y] = [nx/nboxes_x,ny/nboxes_y];		// lengths of a single box
+	const [x0,y0] = [94,20];										// grid offset in image
+	
+	const [xpos,ypos] = getCursorPosition(canvas,event);			// position of mouse in image
+	const [x,y] = [xpos-x0, ypos-y0];								// position in grid
+	
+	if(x >= 0 && x <= nx && y >= 0 && y <= ny){
+		const [boxIdx_x,boxIdx_y] = [Math.floor((x+0.5*boxSize_x)/boxSize_x), Math.floor((y+0.5*boxSize_y)/boxSize_y)];		// box index
+		const [boxCorner_x,boxCorner_y] = [x0-0.5*boxSize_x+boxIdx_x*boxSize_x,y0-0.5*boxSize_y+boxIdx_y*boxSize_y];
+		
+		const [bStart,bEnd] = [-3.0,3.0];
+		const [cStart,cEnd] = [-3.0,3.0];
+		[b,c] = [bStart+boxIdx_x*(bEnd-bStart)/nboxes_x,cEnd-boxIdx_y*(cEnd-cStart)/nboxes_y];
+		
+		// update overview image overlay
+		var ctx=canvas.getContext("2d");
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.strokeStyle = "red";
+		ctx.strokeRect(boxCorner_x,boxCorner_y,boxSize_x,boxSize_y);
+		ctx.strokeStyle = "orange";
+		ctx.strokeRect(boxCorner_x+1,boxCorner_y+1,boxSize_x-2,boxSize_y-2);
+		ctx.strokeRect(boxCorner_x-1,boxCorner_y-1,boxSize_x+2,boxSize_y+2);
+		
+		// update state image tab
+		var canvas3=document.getElementById("state_image");
+		var ctx3=canvas3.getContext("2d");
+		var img=new Image();
+		img.onload = function () {
+			ctx3.drawImage(img,0,0,canvas3.width,canvas3.height);		// draw the image on the canvas
+		}
+		img.src = "images/xt_state_c1_" + b.toFixed(5) + "_c2_" + c.toFixed(5) + ".png";
+		
+		// update parameter string
+		$('#datapoint').text("Parameters: b = " + b.toFixed(2) + ", c = " + c.toFixed(2));
+		
+		//~ console.log("boxIdx_x: " + boxIdx_x + " boxIdx_y: " + boxIdx_y);			// DEBUG
+		//~ console.log("b: " + b + " c: " + c);										// DEBUG
+	}
+}
+
 
 
 
