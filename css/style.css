@@ -11,7 +11,9 @@ div.dataframe {
 */
     border: none;
     background-color: #fff;
-    /*border-bottom: 1px solid #666;*/
+/*
+    border-bottom: 1px solid #666;
+*/
     border-left: none;
     /*border-right: 1px solid #666;*/
 }
@@ -126,7 +128,10 @@ div.right {
 .floatright {
 	float: left;
     background-color: #ffffff;
+/*
     height: 658px;
+*/
+    height: 800px;
     width: 824px;
     padding: 6px 12px;
     /*border-left: 1px solid #666;*/

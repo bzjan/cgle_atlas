@@ -12,8 +12,8 @@
 var glcanvas;				// reference to simulation canvas
 
 // global read/write variables
-var b = 0.0;
-var c = 0.0;
+var b = -0.47;
+var c = 1.11;
 var brushx = -1;
 var brushy = -1;
 
@@ -338,7 +338,7 @@ function clickableCanvasOverlay(event,canvas) {
 		img.src = "images/xt_state_c1_" + b.toFixed(5) + "_c2_" + c.toFixed(5) + ".png";
 		
 		// update parameter string
-		$('#datapoint').text("Parameters: b = " + b.toFixed(2) + ", c = " + c.toFixed(2));
+		$('#datapoint').text("b = " + b.toFixed(2) + ", c = " + c.toFixed(2));
 		
 		//~ console.log("boxIdx_x: " + boxIdx_x + " boxIdx_y: " + boxIdx_y);			// DEBUG
 		//~ console.log("b: " + b + " c: " + c);										// DEBUG

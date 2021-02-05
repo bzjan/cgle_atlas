@@ -1,7 +1,8 @@
 # CGLE Atlas
 
+Created and maintained by Jan F. Totz
 
-run test on local machine via
+run on local machine via
 cd ~/Desktop/cgle_atlas
 python -m SimpleHTTPServer 1337 &
 firefox http://127.0.0.1:1337

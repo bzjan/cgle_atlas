@@ -5,7 +5,8 @@
 <link rel="icon" type="image/png" href="files/icon.png" sizes="32x32">
 <link rel="stylesheet" type="text/css" href="css/style.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 <!-- Written by Jan F. Totz (c) 2021 -->
 <!-- Please send any questions, comments or bug reports to the author at jantotz (a) mit.edu -->
@@ -124,23 +125,28 @@
 	<br>
 	
 	<p>
+		<font size="4">This webpage serves as a companion to the project:<br/></font>
+		<font size="2"> <br/></font>
 		<font size="5">
-		This webpage serves as a companion to the publication: <br/>
-		J. Liu, J. F. Totz, P. W. Miller, A. Hastewell, J. Dunkel, and N. Fakhri: "Topological braiding and virtual particles on the cell membrane" (2021) <br/>
+			<strong>Topological braiding and virtual particles on the cell membrane</strong> (2021)<br/>
+			J. Liu, J. F. Totz, P. W. Miller, A. Hastewell, J. Dunkel, and N. Fakhri <br/>
 		<br/>
 		</font>
-		
 		<font size="4">
-			Click on the interactive parameter space image below to run a simulation of the Complex Ginzburg-Landau Equation (CGLE): <br/>
-			<br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="files/cgle.png" width="500" alt="Complex Ginzburg-Landau Equation" /> <br/>
-			<br/>
-			See different tabs to explore spatial and temporal characteristics of the resulting pattern at your chosen parameter point.
+			Click on the interactive parameter space image below to run a simulation of the Complex Ginzburg-Landau Equation (CGLE):<br/>
+		</font>
+		<br/>
+		<font size="3">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="files/cgle.png" width="500" alt="Complex Ginzburg-Landau Equation" /><br/>
+		</font>
+		<br/>
+		<font size="4">
+			where \(\psi= |\psi|e^{\textrm{i}\phi}\) is a complex field with amplitude \(|\psi|\) and phase \(\phi\).<br/>
+			Select tabs to explore spatial and temporal characteristics of the resulting pattern at your chosen parameter point.
 		</font>
 	</p>
 	
 	<br>
-	
 	
 	
 	<div class="wrap">
@@ -154,7 +160,7 @@
 			
 			<!-- left: dynamic parameter space image -->
 			<div class="floatleft">
-				<h3>&nbsp;</h3>
+				<p style="margin-bottom:0.1cm;">&nbsp;</p>
 				<div style="position: relative;">
 					<canvas id="layer_image" width="666" height="536" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
 					<canvas id="layer_overlay" width="666" height="536"  onclick="clickableCanvasOverlay(event,this)" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
@@ -163,7 +169,7 @@
 			
 			<!-- right: tabs for different data at selected parameters -->
 			<div class="floatright">
-				<p>The data below corresponds to the following parameters:<br><strong id="datapoint">Parameters: b = -0.47, c = 1.11</strong></p>
+				<p>The data below corresponds to the following parameters: <strong id="datapoint">b = -0.47, c = 1.11</strong></p>
 				<div class="tab" id="openData">
 					<div class="left">
 						<button class="tablinks_content active" onclick="selectContent(event, 'Simulation')">Simulation</button>
@@ -185,7 +191,7 @@
 				
 				<!-- content of State image tab -->
 				<div id="StateImage" class="tabcontent_content" style="display: none;">
-					<h3>Kymograph and snapshot of final state</h3>
+					<h3>Kymograph and final spatial state of phase field \(\boldsymbol{\phi}\)</h3>
 					<canvas id="state_image" width="852" height="403"></canvas>
 				</div>
 				
@@ -193,6 +199,13 @@
 		</div>
 	
 	
+	</div>
+	<div style="clear: both;"> </div>
+<!--
+	<div style="overflow: hidden; border: 0px solid #ccc; background-color: #f1f1f1; margin: 0; padding: 0;">
+-->
+	<div style=" background-color: #f1f1f1; border: 1px solid #fff; ">
+		<p><font size="3">Created and maintained by Jan F. Totz. Please send any questions, comments or bug reports to the author at: jantotz (a) mit.edu</font></p>
 	</div>
 	
 </body>
