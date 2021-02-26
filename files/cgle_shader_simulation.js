@@ -301,11 +301,6 @@ function getCursorPosition(canvas, event) {
 // update clickable overlay canvas
 function clickableCanvasOverlay(event,canvas) {
 	
-	const [nx,ny] = [434,434];										// lengths in x,y direction
-	const [nboxes_x,nboxes_y] = [19,19];							// number of boxes
-	const [boxSize_x,boxSize_y] = [nx/nboxes_x,ny/nboxes_y];		// lengths of a single box
-	const [x0,y0] = [94,20];										// grid offset in image
-	
 	const [xpos,ypos] = getCursorPosition(canvas,event);			// position of mouse in image
 	const [x,y] = [xpos-x0, ypos-y0];								// position in grid
 	
@@ -315,8 +310,6 @@ function clickableCanvasOverlay(event,canvas) {
 		const [boxCorner_x,boxCorner_y] = [x0-0.5*boxSize_x+boxIdx_x*boxSize_x,y0-0.5*boxSize_y+boxIdx_y*boxSize_y];
 		
 		// get b,c values
-		const [bStart,bEnd] = [-3.0,3.0];
-		const [cStart,cEnd] = [-3.0,3.0];
 		[b,c] = [bStart+boxIdx_x*(bEnd-bStart)/nboxes_x,cEnd-boxIdx_y*(cEnd-cStart)/nboxes_y];
 		
 		// update overview image overlay
