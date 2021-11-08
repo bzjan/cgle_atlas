@@ -47,7 +47,8 @@ async function run() {
 		
 		// TODO: fix warning message
 		// enable necessary extensions
-		//~ gl.getExtension('EXT_color_buffer_float');
+		gl.getExtension('WEBGL_color_buffer_float');				// webgl1
+		//~ gl.getExtension('EXT_color_buffer_float');					// webgl2
 		//~ gl.getExtension('EXT_float_blend');
 		
 		glcanvas.onmousedown = onMouseDown;
