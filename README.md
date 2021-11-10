@@ -27,4 +27,4 @@ www.cgleatlas.com
 
 
 ### literature
-1. J. Liu, J. F. Totz, P. W. Miller, A. D. Hastewell, Y.-C. Chao, J. Dunkel, N. Fakhri, Topological braiding and virtual particles on the cell membrane. Proc. Natl. Acad. Sci. USA. 118 (2021)
+J. Liu, J. F. Totz, P. W. Miller, A. D. Hastewell, Y.-C. Chao, J. Dunkel, N. Fakhri, Topological braiding and virtual particles on the cell membrane. Proc. Natl. Acad. Sci. USA. 118 (2021)
