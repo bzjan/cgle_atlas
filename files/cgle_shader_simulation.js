@@ -107,9 +107,10 @@ async function run() {
 				gl.uniform1f(gl.getUniformLocation(timestep_prog, "c2"), c);					// parameter for dynamics
 				var timeStepsPerFrame = 100;
 				for (var i=0; i<timeStepsPerFrame; i++) {
+					// TODO: do a better swap!
 					gl.bindTexture(gl.TEXTURE_2D, [t1, t2][i % 2]);
 					gl.bindFramebuffer(gl.FRAMEBUFFER, [fb2, fb1][i % 2]);
-					gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+					gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);										// execute program
 				}
 				
 				// update image
