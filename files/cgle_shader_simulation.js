@@ -81,7 +81,8 @@ async function run() {
 		gl.uniform2f(gl.getUniformLocation(render_prog, "u_size"), W, H);
 		
 		// set initial state
-		var initial_state = getInitialState();
+		var initialConditionChoice = 0;
+		var initial_state = getInitialState(initialConditionChoice);
 		
 		// initialize textures and framebuffers
 		var t1 = newTexture(gl, initial_state);		// current state
@@ -91,7 +92,7 @@ async function run() {
 		
 		// Check the hardware can render to a float framebuffer
 		// (https://developer.mozilla.org/en-US/docs/Web/WebGL/WebGL_best_practices)
-		gl.useProgram(timestep_prog);
+		//~ gl.useProgram(timestep_prog);
 		gl.bindFramebuffer(gl.FRAMEBUFFER, fb1);
 		var fb_status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
 		if (fb_status != gl.FRAMEBUFFER_COMPLETE) {
@@ -99,6 +100,7 @@ async function run() {
 		}
 		
 		function step() {
+			var inputTexture, outputFramebuffer;
 			if(!pauseQ){
 				// update dynamics
 				gl.useProgram(timestep_prog);
@@ -107,9 +109,16 @@ async function run() {
 				gl.uniform1f(gl.getUniformLocation(timestep_prog, "c2"), c);					// parameter for dynamics
 				var timeStepsPerFrame = 100;
 				for (var i=0; i<timeStepsPerFrame; i++) {
-					// TODO: do a better swap!
-					gl.bindTexture(gl.TEXTURE_2D, [t1, t2][i % 2]);
-					gl.bindFramebuffer(gl.FRAMEBUFFER, [fb2, fb1][i % 2]);
+					// swap input and output
+					if(i % 2 === 0){
+						inputTexture = t1;
+						outputFramebuffer = fb2;
+					}else{
+						inputTexture = t2;
+						outputFramebuffer = fb1;
+					}
+					gl.bindTexture(gl.TEXTURE_2D, inputTexture);								// set input
+					gl.bindFramebuffer(gl.FRAMEBUFFER, outputFramebuffer);						// set output
 					gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);										// execute program
 				}
 				
@@ -141,24 +150,22 @@ async function loadShaderFileAsync(url) {
 
 
 
-function getInitialState(){
+function getInitialState(initialConditionChoice){
 	var field = new Float32Array(4 * W * H);
-	
-	var initialConditionChoice = 0;
 	
 	for(var y=0; y<H; y++){
 	for(var x=0; x<W; x++){
 		var idx = x + y*W;
 		switch(initialConditionChoice){
-			case 0:		// random
+			case 0:						// random phase (complex order parameter)
 				field[4*idx + 0] = 2.0*Math.random() - 1.0;
 				field[4*idx + 1] = 2.0*Math.random() - 1.0;
 				break;
-			case 1:			// linear phase gradient
-				field[4*idx + 0] = cos(2.0*Math.PI*x/W);
-				field[4*idx + 1] = sin(2.0*Math.PI*y/H);
+			case 1:						// linear phase gradient (complex order parameter)
+				field[4*idx + 0] = Math.cos(2.0*Math.PI*x/W);
+				field[4*idx + 1] = Math.sin(2.0*Math.PI*x/W);
 				break;
-			default:		// uniform
+			default:					// uniform
 				field[4*idx + 0] = 1.0;
 				field[4*idx + 1] = 0.0;
 				break;
