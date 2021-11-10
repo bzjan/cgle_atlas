@@ -109,14 +109,7 @@ async function run() {
 				gl.uniform1f(gl.getUniformLocation(timestep_prog, "c2"), c);					// parameter for dynamics
 				var timeStepsPerFrame = 100;
 				for (var i=0; i<timeStepsPerFrame; i++) {
-					// swap input and output
-					if(i % 2 === 0){
-						inputTexture = t1;
-						outputFramebuffer = fb2;
-					}else{
-						inputTexture = t2;
-						outputFramebuffer = fb1;
-					}
+					[inputTexture,outputFramebuffer] = (i % 2 === 0) ? [t1,fb2] : [t2,fb1];		// swap input and output
 					gl.bindTexture(gl.TEXTURE_2D, inputTexture);								// set input
 					gl.bindFramebuffer(gl.FRAMEBUFFER, outputFramebuffer);						// set output
 					gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);										// execute program
